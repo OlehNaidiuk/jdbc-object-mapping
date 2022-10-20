@@ -1,68 +1,53 @@
 package com.naidiuk.service;
 
-import com.naidiuk.entity.Gender;
 import com.naidiuk.entity.User;
-import com.naidiuk.util.JdbcConstants;
+import com.naidiuk.repository.UserRepository;
+import com.naidiuk.repository.UserRepositoryImpl;
 import com.naidiuk.util.SqlQueries;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository = new UserRepositoryImpl();
+
     @Override
     public void printAllYoungerEighteen() {
-        List<User> users = getUsersFromDB(SqlQueries.FIND_ALL_YOUNGER_EIGHTEEN);
+        List<User> users = userRepository.findAllYoungerEighteen();
+        System.out.println("Users younger eighteen:");
         printAll(users);
+        System.out.println("===============================================================================");
     }
 
     @Override
     public void printAllWhoseNameEndsWithO() {
-        List<User> users = getUsersFromDB(SqlQueries.FIND_ALL_WHOSE_NAME_END_WITH_O);
+        List<User> users = userRepository.findAllWhoseNameEndsWithO();
+        System.out.println("Users whose name ends with 'o':");
         printAll(users);
+        System.out.println("===============================================================================");
     }
 
     @Override
     public void printAllWhoseAgeBetweenEighteenAndSixty() {
-        List<User> users = getUsersFromDB(SqlQueries.FIND_ALL_WHOSE_AGE_BETWEEN_EIGHTEEN_AND_SIXTY);
+        List<User> users = userRepository.findAllWhoseAgeBetweenEighteenAndSixty();
+        System.out.println("Users whose age between 18 and 60:");
         printAll(users);
+        System.out.println("===============================================================================");
     }
 
     @Override
     public void printNumberOfUsersWhoseNameContainsA() {
-        List<User> users = getUsersFromDB(SqlQueries.FIND_ALL_WHOSE_NAME_CONTAINS_A);
+        List<User> users = userRepository.findAllWhoseNameContainsA();
+        System.out.println("Number of users whose name contains 'a':");
         System.out.println(users.size());
+        System.out.println("===============================================================================");
     }
 
     @Override
     public void printNumberOfAdultUsers() {
-        List<User> users = getUsersFromDB(SqlQueries.FIND_ALL_ADULT);
+        List<User> users = userRepository.findAllAdult();
+        System.out.println("Number of adult users:");
         System.out.println(users.size());
-    }
-
-    private List<User> getUsersFromDB(String query) {
-        try (Connection connection =
-                     DriverManager.getConnection(JdbcConstants.URL, JdbcConstants.USERNAME, JdbcConstants.PASSWORD)) {
-
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-            List<User> users = new ArrayList<>();
-
-            while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setFirstName(resultSet.getString(2));
-                user.setLastName(resultSet.getString(3));
-                user.setAge(resultSet.getInt(4));
-                user.setGender(Gender.valueOf(resultSet.getString(5)));
-                users.add(user);
-            }
-
-            connection.close();
-            return users;
-        } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        System.out.println("===============================================================================");
     }
 
     private void printAll(List<User> users) {
